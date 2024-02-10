@@ -13,17 +13,16 @@ class RecordedPointsProvider extends ChangeNotifier{
   int get dedicationLevel {
     if (_recordingPoints >= 500) {
       return 5; // Expert
-    } else if (_recordingPoints >= 400 && _recordingPoints < 300) {
+    } else if (_recordingPoints >= 300 && _recordingPoints < 400) {
       return 4; // Dedicated
-    } else if (_recordingPoints >= 300 && _recordingPoints < 200) {
+    } else if (_recordingPoints >= 200 && _recordingPoints < 300) {
       return 3; // Regular
-    } else if (_recordingPoints >= 200 && _recordingPoints < 100) {
+    } else if (_recordingPoints >= 100 && _recordingPoints < 200) {
       return 2; // Novice
     } else {
       return 0; // Beginner
     }
   }
-
   void recordPoints(String recordingType){
     DateTime currentTime = DateTime.now();
 

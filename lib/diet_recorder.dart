@@ -6,7 +6,7 @@ class DietRecorderWidget extends StatefulWidget {
   const DietRecorderWidget({super.key,});
 
   @override
-  _DietRecorderWidgetState createState() => _DietRecorderWidgetState();
+  State<DietRecorderWidget> createState() => _DietRecorderWidgetState();
 }
 
 class _DietRecorderWidgetState extends State<DietRecorderWidget> {
@@ -21,7 +21,6 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: const EdgeInsets.only(top: 75),
         padding: const EdgeInsets.symmetric(vertical: 50.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -47,8 +46,25 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
                 itemCount: loggedEntries.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(loggedEntries[index]['food'] ?? ''),
-                    subtitle: Text(loggedEntries[index]['quantity'] ?? ''),
+                      leading: Text(loggedEntries[index]['food'] ?? ''),
+                      title: Text(loggedEntries[index]['quantity'] ?? ''),
+                      trailing:Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            onPressed: () {
+                              //  logic for editing the item
+                            },
+                            icon: const Icon(Icons.edit),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              // logic for deleting the item
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ],
+                      ),
                   );
                 },
               ),
@@ -59,7 +75,8 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
     );
   }
 
-  Widget _buildInputSection() {
+
+Widget _buildInputSection() {
     return Column(
       children: [
         if (uniqueDietEntries.isNotEmpty)

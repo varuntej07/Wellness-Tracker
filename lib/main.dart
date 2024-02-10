@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:homework1/recordedInfo.dart';
 import 'package:provider/provider.dart';
 import '/workout_recorder.dart';
 import '/emotion_recorder.dart';
@@ -20,103 +20,59 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Assignment-1 with mock data'),
+    return const MaterialApp(
+      //title: 'Flutter Demo',
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final PageController controller = PageController();
+  createState() => _MyHomePage();
+}
+class _MyHomePage extends State<MyHomePage> {
+    int selectedIndex = 0;
 
-    final List<Widget> pages = [
-      const Center(child: EmotionRecorderWidget()),
-      const Center(child: DietRecorderWidget()),
-      const Center(child: WorkoutRecorderWidget()),
+    final List<Widget> _widgets = [
+        EmotionRecorderWidget(),
+        DietRecorderWidget(),
+        WorkoutRecorderWidget()
     ];
+    void _onTap(int index){
+      print("tapped");
+      setState(() {
+        selectedIndex = index;
+      });
+    }
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            reverse: true,
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: pages
-                  .map((page) => SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: page,
-                ),
-              ).toList(),
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const RecordedInfoWidget(),
+        ),
+        body: _widgets.elementAt(selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.emoji_emotions_outlined),
+                label: 'Emotions'
             ),
-          ),
-          const Positioned(
-            top: 30.0,
-            left: 30.0,
-            child: RecordedInfoWidget(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class RecordedInfoWidget extends StatelessWidget {
-  const RecordedInfoWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    RecordedPointsProvider appState = Provider.of<RecordedPointsProvider>(context);
-    return Consumer<RecordedPointsProvider>(
-      builder: (context, recordingProvider, child) {
-        return Container(
-          color: CupertinoColors.systemGrey4,
-            child: Column(
-            children:[
-            Text("Last Recorded at: ${appState.lastRecordingTime ?? 'No recordings yet'}",
-              style: const TextStyle(
-                fontSize: 16.0,
-                  fontStyle: FontStyle.italic
-              ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.fastfood_rounded),
+                label: 'Diet'
             ),
-            Text("Last Recorded: ${appState.lastRecordingType ?? 'No recordings yet'}",
-              style: const TextStyle(
-                fontSize: 16.0,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-            Row(
-              children: [
-                Text("Points earned: ${appState.recordingPoints}",
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text("Dedication Level: ${appState.dedicationLevel}",
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.line_weight),
+                label: 'workout'
+            )
           ],
-          )
-        );
-      },
+          currentIndex: selectedIndex,
+          onTap: _onTap,
+        ),
     );
   }
 }
-

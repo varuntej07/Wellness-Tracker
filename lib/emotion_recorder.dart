@@ -7,7 +7,7 @@ class EmotionRecorderWidget extends StatefulWidget {
   const EmotionRecorderWidget({super.key});
 
   @override
-  _EmotionRecorderWidgetState createState() => _EmotionRecorderWidgetState();
+  createState() => _EmotionRecorderWidgetState();
 }
 
 class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
@@ -23,7 +23,6 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-          margin: const EdgeInsets.only(top: 59),
             padding: const EdgeInsets.all(36.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
