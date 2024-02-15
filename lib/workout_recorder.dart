@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:homework1/points_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'Models/data_model.dart';
 
 class WorkoutRecorderWidget extends StatefulWidget {
   const WorkoutRecorderWidget({Key? key}) : super(key: key);
@@ -18,6 +21,34 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
   TextEditingController quantityController = TextEditingController();
   List<Map<String, dynamic>> loggedEntries = [];
   String dropdownValue = exercises.first;
+
+  late Box workoutBox;
+
+  @override
+  void initState() {
+    super.initState();
+    _openBox();
+  }
+
+  Future<void> _openBox() async {
+    workoutBox = await Hive.openBox('workoutBox');
+    final List<Map<String, dynamic>> loadedEntries = [];
+    workoutBox.toMap().forEach((key, record) {
+      if (record is WorkoutRecord) {
+        loadedEntries.add({
+          'key': key, // Storing the Hive-generated key for later reference
+          'exercise': record.workout,
+          'quantity': record.count.toString(),
+          //'datetime': DateTime.now().toString(),
+        });
+      }
+    });
+    if(mounted) {
+      setState(() {
+      loggedEntries = loadedEntries;
+    });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +106,11 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
                     title: Text(loggedEntries[index]['exercise'] ?? '',
                         style: const TextStyle(fontSize: 18.0)
                     ),
-                    subtitle: Text(loggedEntries[index]['quantity'] ?? '',
+                    subtitle: Text('${loggedEntries[index]['quantity']} times',
                         style: const TextStyle(fontSize: 18.0)
                     ),
                     trailing: IconButton(
-                      onPressed: (){},
+                      onPressed: () => deleteWorkout(index),
                       icon: const Icon(Icons.delete)
                     ),
                   );
@@ -92,18 +123,38 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
     );
   }
 
-  void recordWorkout() {
-    String quantity = quantityController.text;
-    if (dropdownValue.isNotEmpty && quantity.isNotEmpty) {
-      String timestamp = DateTime.now().toString();
-      Map<String, dynamic> entry = {'exercise': dropdownValue, 'quantity': quantity, 'datetime': timestamp};
-      setState(() {
-        loggedEntries.add(entry);
-      });
-      // Clearing text field after recording
-      quantityController.clear();
+  void recordWorkout() async {
+    context.read<RecordedPointsProvider>().recordPoints('Workout Record');
+    final String quantityText = quantityController.text;
+    final int? quantity = int.tryParse(quantityText);
+    if (dropdownValue.isNotEmpty && quantity != null) {
+      final String timestamp = DateTime.now().toString();
+      final WorkoutRecord entry = WorkoutRecord(dropdownValue, quantity);
 
-      context.read<RecordedPointsProvider>().recordPoints('Workout Record');
+      // Add the entry to the Hive box and save the returned key
+      final key = await workoutBox.add(entry);
+
+      // Store the key with the entry data in the loggedEntries list
+      setState(() {
+        loggedEntries.add({'key': key, 'exercise': dropdownValue, 'quantity': quantityText, 'datetime': timestamp});
+      });
+
+      // Clear the text field after recording
+      quantityController.clear();
     }
+  }
+
+
+  void deleteWorkout(int index) async {
+    final entry = loggedEntries[index];
+    final key = entry['key'] as int;
+
+    // Delete the entry from the Hive box using the correct key
+    await workoutBox.delete(key);
+
+    // Remove the entry from the UI state
+    setState(() {
+      loggedEntries.removeAt(index);
+    });
   }
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:homework1/points_provider.dart';
-import 'package:provider/provider.dart';
-import 'dataModel.dart';
+import 'Models/data_model.dart';
 
 class EmotionRecorderWidget extends StatefulWidget {
   const EmotionRecorderWidget({super.key});
@@ -19,6 +17,36 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
   };
 
   List<Map<String, dynamic>> loggedEntries = [];
+
+  late Box emojiBox;
+
+  @override
+  void initState() {
+    super.initState();
+    _openBox();
+  }
+
+  Future<void> _openBox() async {
+    emojiBox = await Hive.openBox('emojiBox');
+    print("Box opened: ${emojiBox.isOpen}");
+    final List<Map<String, dynamic>> loadedEntries = [];
+
+    emojiBox.toMap().forEach((key, value) {
+      if (value is EmotionRecord) {
+        print("Loaded emotion: ${value.emoji}, datetime: ${value.datetime}");
+        loadedEntries.add({
+          'key': key,
+          'emoji': value.emoji,
+          'datetime': value.datetime,
+        });
+      }
+    });
+    if (mounted) {
+      setState(() {
+        loggedEntries = loadedEntries;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +93,7 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
                         title: Text(loggedEntries[index]['emoji']),
                         subtitle: Text(loggedEntries[index]['datetime']),
                         trailing: IconButton(
-                          onPressed: () {},
+                          onPressed: () => deleteEmoji(index),
                           icon: const Icon(Icons.delete),
                         ),
                       );
@@ -79,20 +107,30 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
   }
 
   void recordEmotion(int choice) async {
-    print('clicked');
     if (emotions.containsKey(choice)) {
       final selectedEmoji = emotions[choice]!;
       final timestamp = DateTime.now().toString();
-      final entry = EmotionRecord(timestamp, selectedEmoji);
+      final EmotionRecord entry = EmotionRecord(timestamp, selectedEmoji);
+
+      final key = await emojiBox.add(entry); // Add to the Hive box
 
       setState(() {
-        loggedEntries.add({'emoji': entry.emoji, 'datetime': entry.datetime});
-        print("Entry added: ${entry.emoji}");
+        loggedEntries.add({'key': key, 'emoji': entry.emoji, 'datetime': entry.datetime});
       });
-      Provider.of<RecordedPointsProvider>(context, listen: false).recordPoints('Emotion Record');
-    }else {
-      print("EmojiBox is null or emotion not found for choice: $choice");
     }
+  }
+
+
+
+  void deleteEmoji(int index) async {
+    final entry = loggedEntries[index];
+    final key = entry['key'];
+
+    await emojiBox.delete(key); // Delete the entry from the Hive box using the correct key
+
+    setState(() {
+      loggedEntries.removeAt(index); // Remove the entry from the UI state
+    });
   }
 }
 

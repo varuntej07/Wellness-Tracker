@@ -6,21 +6,22 @@ import '/workout_recorder.dart';
 import '/emotion_recorder.dart';
 import '/diet_recorder.dart';
 import '/points_provider.dart';
-import 'dataModel.dart';
+import 'Models/data_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(EmotionRecordAdapter());
+  Hive.registerAdapter(DietRecordAdapter());
+  Hive.registerAdapter(WorkoutRecordAdapter());
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => RecordedPointsProvider(),
-      child: const MyApp()
-    )
+      ChangeNotifierProvider(
+          create: (context) => RecordedPointsProvider(),
+          child: const MyApp()
+      )
   );
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -40,45 +41,75 @@ class MyHomePage extends StatefulWidget {
   createState() => _MyHomePage();
 }
 class _MyHomePage extends State<MyHomePage> {
-    int selectedIndex = 0;
+  int selectedIndex = 0;
 
-    final List<Widget> _widgets = [
-        EmotionRecorderWidget(),
-        DietRecorderWidget(),
-        WorkoutRecorderWidget()
-    ];
-    void _onTap(int index){
-      print("tapped");
-      setState(() {
-        selectedIndex = index;
-      });
-    }
+  Future<void> openHiveBox() async {
+    await Hive.openBox<EmotionRecord>('emotionRecords');
+  }
 
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const RecordedInfoWidget(),
-        ),
-        body: _widgets.elementAt(selectedIndex),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.emoji_emotions_outlined),
-                label: 'Emotions'
+  final List<Widget> _widgets = [
+    EmotionRecorderWidget(),
+    DietRecorderWidget(),
+    WorkoutRecorderWidget()
+  ];
+
+  void _onTap(int index) {
+    print("tapped");
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: openHiveBox(), // Call the method to open the Hive box
+      builder: (context, snapshot) {
+        // Check if the future has completed
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Scaffold(body: Center(
+                child: Text('Error opening Hive box: ${snapshot.error}'))
+            );
+          }
+          // Future complete, return the main UI
+          return Scaffold(
+            appBar: AppBar(
+              title: const RecordedInfoWidget(),
             ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.fastfood_rounded),
-                label: 'Diet'
+            body: _widgets.elementAt(selectedIndex),
+            bottomNavigationBar: BottomNavigationBar(
+              selectedItemColor: Colors.green[200],
+              unselectedItemColor: Colors.orangeAccent,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.emoji_emotions_outlined),
+                    label: 'Emotions'
+                ),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.fastfood_rounded),
+                    label: 'Diet'
+                ),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.line_weight),
+                    label: 'Workout'
+                )
+              ],
+              currentIndex: selectedIndex,
+              onTap: _onTap,
             ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.line_weight),
-                label: 'workout'
-            )
-          ],
-          currentIndex: selectedIndex,
-          onTap: _onTap,
-        ),
+          );
+        } else {
+          // Otherwise, show a loading spinner
+          return const Scaffold(
+              body: Center(
+                  child: CircularProgressIndicator()
+              )
+          );
+        }
+      },
     );
   }
 }
