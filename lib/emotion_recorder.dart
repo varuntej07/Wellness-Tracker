@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:homework1/points_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'dataModel.dart';
 
 class EmotionRecorderWidget extends StatefulWidget {
   const EmotionRecorderWidget({super.key});
@@ -29,7 +30,10 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
               children: [
                 const Text(
                   'Emotion Recorder',
-                  style: TextStyle(fontSize: 28.0),
+                  style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold
+                  ),
                 ),
                 const Text(
                   'Yo, choose an emoji that suits your current feeling',
@@ -37,21 +41,21 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
                 ),
                 Wrap(
                   spacing: 8.0,
-                  runSpacing: 8.0,
+                  runSpacing: 5.0,
                   children: emotions.entries.map((entry) => Material(
                     child: ElevatedButton(
                         key: Key('emoji_${entry.key}'),
                         onPressed: () => recordEmotion(entry.key),
                         child: Text(
                           entry.value,
-                          style: const TextStyle(fontSize: 24.0),
+                          style: const TextStyle(fontSize: 20.0),
                         )
                     ),
                   )).toList(),
                 ),
                 const Text(
                   'Emotion Log:',
-                  style: TextStyle(fontSize: 18.0),
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
                 Expanded(
                   child: ListView.builder(
@@ -60,6 +64,10 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
                       return ListTile(
                         title: Text(loggedEntries[index]['emoji']),
                         subtitle: Text(loggedEntries[index]['datetime']),
+                        trailing: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.delete),
+                        ),
                       );
                     },
                   ),
@@ -70,15 +78,22 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
     );
   }
 
-  void recordEmotion(int choice) {
+  void recordEmotion(int choice) async {
+    print('clicked');
     if (emotions.containsKey(choice)) {
-      String? selectedEmoji = emotions[choice];
-      String timestamp = DateTime.now().toString();
-      Map<String, dynamic> entry = {'emoji': selectedEmoji, 'datetime': timestamp};
+      final selectedEmoji = emotions[choice]!;
+      final timestamp = DateTime.now().toString();
+      final entry = EmotionRecord(timestamp, selectedEmoji);
+
       setState(() {
-        loggedEntries.add(entry);
+        loggedEntries.add({'emoji': entry.emoji, 'datetime': entry.datetime});
+        print("Entry added: ${entry.emoji}");
       });
       Provider.of<RecordedPointsProvider>(context, listen: false).recordPoints('Emotion Record');
+    }else {
+      print("EmojiBox is null or emotion not found for choice: $choice");
     }
   }
 }
+
+

@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:homework1/recordedInfo.dart';
 import 'package:provider/provider.dart';
 import '/workout_recorder.dart';
 import '/emotion_recorder.dart';
 import '/diet_recorder.dart';
 import '/points_provider.dart';
+import 'dataModel.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(EmotionRecordAdapter());
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => RecordedPointsProvider(),
       child: const MyApp()
-  )
+    )
   );
 }
 

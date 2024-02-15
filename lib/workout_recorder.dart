@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:homework1/points_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +25,11 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 50.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Text(
               'Workout Recorder',
-              style: TextStyle(fontSize: 28.0),
+              style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
             ),
             DropdownButton<String>(
               value: dropdownValue,
@@ -63,17 +64,24 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
               child: const Text('Submit'),
             ),
             const SizedBox(height: 16.0),
-            const Text(
-              'Workout Log:',
-              style: TextStyle(fontSize: 18.0),
+            const Text('Workout Log',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             Expanded(
               child: ListView.builder(
                 itemCount: loggedEntries.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(loggedEntries[index]['exercise'] ?? ''),
-                    subtitle: Text(loggedEntries[index]['quantity'] ?? ''),
+                    title: Text(loggedEntries[index]['exercise'] ?? '',
+                        style: const TextStyle(fontSize: 18.0)
+                    ),
+                    subtitle: Text(loggedEntries[index]['quantity'] ?? '',
+                        style: const TextStyle(fontSize: 18.0)
+                    ),
+                    trailing: IconButton(
+                      onPressed: (){},
+                      icon: const Icon(Icons.delete)
+                    ),
                   );
                 },
               ),

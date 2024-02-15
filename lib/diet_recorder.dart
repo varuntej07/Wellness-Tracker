@@ -25,9 +25,8 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Diet Recorder',
-              style: TextStyle(fontSize: 28.0),
+            const Text('Diet Recorder',
+              style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
             ),
             _buildInputSection(),
             const SizedBox(height: 16.0),
@@ -36,9 +35,8 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
               child: const Text('Submit'),
             ),
             const SizedBox(height: 16.0),
-            const Text(
-              'Diet Log:',
-              style: TextStyle(fontSize: 18.0),
+            const Text('Diet Log',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             Expanded(
               child: ListView.builder(
@@ -46,21 +44,21 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
                 itemCount: loggedEntries.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                      leading: Text(loggedEntries[index]['food'] ?? ''),
-                      title: Text(loggedEntries[index]['quantity'] ?? ''),
+                      leading: Text(loggedEntries[index]['food'] ?? '',
+                        style: const TextStyle(fontSize: 18.0)
+                      ),
+                      title: Text(loggedEntries[index]['quantity'] ?? '',
+                          style: const TextStyle(fontSize: 18.0)
+                      ),
                       trailing:Row(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           IconButton(
-                            onPressed: () {
-                              //  logic for editing the item
-                            },
+                            onPressed: () {},
                             icon: const Icon(Icons.edit),
                           ),
                           IconButton(
-                            onPressed: () {
-                              // logic for deleting the item
-                            },
+                            onPressed: () {},
                             icon: const Icon(Icons.delete),
                           ),
                         ],
