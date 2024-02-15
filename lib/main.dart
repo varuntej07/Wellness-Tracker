@@ -14,7 +14,6 @@ void main() async {
   Hive.registerAdapter(EmotionRecordAdapter());
   Hive.registerAdapter(DietRecordAdapter());
   Hive.registerAdapter(WorkoutRecordAdapter());
-
   runApp(
       ChangeNotifierProvider(
           create: (context) => RecordedPointsProvider(),
@@ -40,6 +39,7 @@ class MyHomePage extends StatefulWidget {
   @override
   createState() => _MyHomePage();
 }
+
 class _MyHomePage extends State<MyHomePage> {
   int selectedIndex = 0;
 
@@ -48,13 +48,12 @@ class _MyHomePage extends State<MyHomePage> {
   }
 
   final List<Widget> _widgets = [
-    EmotionRecorderWidget(),
-    DietRecorderWidget(),
-    WorkoutRecorderWidget()
+    const EmotionRecorderWidget(),
+    const DietRecorderWidget(),
+    const WorkoutRecorderWidget()
   ];
 
   void _onTap(int index) {
-    print("tapped");
     setState(() {
       selectedIndex = index;
     });
@@ -63,9 +62,9 @@ class _MyHomePage extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: openHiveBox(), // Call the method to open the Hive box
+      future: openHiveBox(), // Calling the method to open the Hive box
       builder: (context, snapshot) {
-        // Check if the future has completed
+        // Checking if the future has completed
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
             return Scaffold(body: Center(
@@ -75,7 +74,14 @@ class _MyHomePage extends State<MyHomePage> {
           // Future complete, return the main UI
           return Scaffold(
             appBar: AppBar(
-              title: const RecordedInfoWidget(),
+              //title: const Text("Wellness Tracker"),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(50.0),
+                child: Container(
+                  color: Colors.white,
+                  child: const RecordedInfoWidget(),
+                ),
+              ),
             ),
             body: _widgets.elementAt(selectedIndex),
             bottomNavigationBar: BottomNavigationBar(

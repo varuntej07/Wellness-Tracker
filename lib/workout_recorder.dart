@@ -131,15 +131,13 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
       final String timestamp = DateTime.now().toString();
       final WorkoutRecord entry = WorkoutRecord(dropdownValue, quantity);
 
-      // Add the entry to the Hive box and save the returned key
       final key = await workoutBox.add(entry);
 
-      // Store the key with the entry data in the loggedEntries list
+      // Storing the key with the entry data in the loggedEntries list
       setState(() {
         loggedEntries.add({'key': key, 'exercise': dropdownValue, 'quantity': quantityText, 'datetime': timestamp});
       });
 
-      // Clear the text field after recording
       quantityController.clear();
     }
   }
@@ -149,10 +147,10 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
     final entry = loggedEntries[index];
     final key = entry['key'] as int;
 
-    // Delete the entry from the Hive box using the correct key
+    // Deleting the entry from the Hive box using the correct key
     await workoutBox.delete(key);
 
-    // Remove the entry from the UI state
+    // Removing the entry from the UI state
     setState(() {
       loggedEntries.removeAt(index);
     });

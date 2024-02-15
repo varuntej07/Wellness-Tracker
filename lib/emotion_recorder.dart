@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:homework1/points_provider.dart';
+import 'package:provider/provider.dart';
 import 'Models/data_model.dart';
 
 class EmotionRecorderWidget extends StatefulWidget {
@@ -107,12 +109,13 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
   }
 
   void recordEmotion(int choice) async {
+    context.read<RecordedPointsProvider>().recordPoints('Diet Recorder');
     if (emotions.containsKey(choice)) {
       final selectedEmoji = emotions[choice]!;
       final timestamp = DateTime.now().toString();
       final EmotionRecord entry = EmotionRecord(timestamp, selectedEmoji);
 
-      final key = await emojiBox.add(entry); // Add to the Hive box
+      final key = await emojiBox.add(entry);
 
       setState(() {
         loggedEntries.add({'key': key, 'emoji': entry.emoji, 'datetime': entry.datetime});
@@ -126,10 +129,10 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
     final entry = loggedEntries[index];
     final key = entry['key'];
 
-    await emojiBox.delete(key); // Delete the entry from the Hive box using the correct key
+    await emojiBox.delete(key);
 
     setState(() {
-      loggedEntries.removeAt(index); // Remove the entry from the UI state
+      loggedEntries.removeAt(index); // Removing the entry from the UI state
     });
   }
 }
