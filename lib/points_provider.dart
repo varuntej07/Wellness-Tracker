@@ -39,14 +39,16 @@ class RecordedPointsProvider extends ChangeNotifier{
   int get recordingPoints => _recordingPoints;
 
   int get dedicationLevel {
-    if (_recordingPoints > 400) {
-      return 5; // Expert
+    if(_recordingPoints>500) {
+      return 5;  //pro
+    } else if (_recordingPoints >=400 && _recordingPoints < 500) {
+      return 4; // Expert
     } else if (_recordingPoints >= 300 && _recordingPoints < 400) {
-      return 4; // Dedicated
+      return 3; // Dedicated
     } else if (_recordingPoints >= 200 && _recordingPoints < 300) {
-      return 3; // Regular
+      return 2; // Regular
     } else if (_recordingPoints >= 100 && _recordingPoints < 200) {
-      return 2; // Novice
+      return 1; // Novice
     } else {
       return 0; // Beginner
     }

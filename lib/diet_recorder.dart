@@ -78,7 +78,7 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
                     style: const TextStyle(fontSize: 18.0),
                   ),
                   title: Text(
-                    "${loggedEntries[index]['quantity']} times",
+                    "${loggedEntries[index]['quantity']}",
                     style: const TextStyle(fontSize: 18.0),
                   ),
                   trailing: Row(

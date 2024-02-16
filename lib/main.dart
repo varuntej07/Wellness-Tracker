@@ -22,13 +22,13 @@ void main() async {
       )
   );
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      //title: 'Flutter Demo',
       home: MyHomePage(),
     );
   }
@@ -61,62 +61,49 @@ class _MyHomePage extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: openHiveBox(), // Calling the method to open the Hive box
-      builder: (context, snapshot) {
-        // Checking if the future has completed
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Scaffold(body: Center(
-                child: Text('Error opening Hive box: ${snapshot.error}'))
-            );
-          }
-          // Future complete, returning the main UI
-          return Scaffold(
-            appBar: AppBar(
-              //title: const Text("Wellness Tracker"),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(50.0),
-                child: Container(
-                  color: Colors.white,
-                  child: const RecordedInfoWidget(),
-                ),
-              ),
-            ),
-            body: _widgets.elementAt(selectedIndex),
-            bottomNavigationBar: BottomNavigationBar(
-              selectedItemColor: Colors.green[200],
-              unselectedItemColor: Colors.orangeAccent,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.emoji_emotions_outlined),
-                    label: 'Emotions'
-                ),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.fastfood_rounded),
-                    label: 'Diet'
-                ),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.line_weight),
-                    label: 'Workout'
-                )
-              ],
-              currentIndex: selectedIndex,
-              onTap: _onTap,
-            ),
-          );
-        } else {
-          // Otherwise, show a loading spinner
-          return const Scaffold(
-              body: Center(
-                  child: CircularProgressIndicator()
-              )
-          );
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(20.0),
+          child: Container(
+            color: Colors.white,
+            child: const RecordedInfoWidget(),
+          ),
+        ),
+      ),
+      body: IndexedStack(
+        index: selectedIndex,
+        children: _widgets,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.purple[400],
+        unselectedItemColor: Colors.blueGrey[250],
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_emotions_outlined),
+              label: 'Emotions'
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.fastfood_rounded),
+              label: 'Diet'
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.line_weight),
+              label: 'Workout'
+
+          )
+        ],
+        currentIndex: selectedIndex,
+        onTap: _onTap,
+      ),
     );
   }
 }

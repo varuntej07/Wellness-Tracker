@@ -30,12 +30,11 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
 
   Future<void> _openBox() async {
     emojiBox = await Hive.openBox('emojiBox');
-    print("Box opened: ${emojiBox.isOpen}");
+    //print("Box opened: ${emojiBox.isOpen}");
     final List<Map<String, dynamic>> loadedEntries = [];
 
     emojiBox.toMap().forEach((key, value) {
       if (value is EmotionRecord) {
-        print("Loaded emotion: ${value.emoji}, datetime: ${value.datetime}");
         loadedEntries.add({
           'key': key,
           'emoji': value.emoji,
@@ -122,8 +121,6 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
       });
     }
   }
-
-
 
   void deleteEmoji(int index) async {
     final entry = loggedEntries[index];
