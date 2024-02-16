@@ -54,7 +54,7 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            padding: const EdgeInsets.all(36.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -66,7 +66,7 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
                   ),
                 ),
                 const Text(
-                  'Yo, choose an emoji that suits your current feeling',
+                  'Yo, choose an emoji that suits your feeling rn',
                   style: TextStyle(fontSize: 18.0),
                 ),
                 Wrap(
