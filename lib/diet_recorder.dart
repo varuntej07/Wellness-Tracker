@@ -183,7 +183,7 @@ Widget _buildInputSection() {
   void deleteDiet(int index) async{
     final entry = loggedEntries[index];
     final key = entry['key'];
-    print(dietBox.values);
+    //print(dietBox.values);
     await dietBox.delete(key);
     setState((){
       loggedEntries.removeAt(index);

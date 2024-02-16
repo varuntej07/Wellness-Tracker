@@ -1,6 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:homework1/Models/data_model.dart';
+
 
 class RecordedPointsProvider extends ChangeNotifier{
+
+  late Box<RecordedPoints> pointsBox;
+  RecordedPointsProvider(){
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    pointsBox = await Hive.openBox<RecordedPoints>('pointsBox');
+
+    //await pointsBox.clear();
+    //used the above clear method to clear all the data from the hive box because there is no
+    //logic implemented for decreasing the points recorded whenever the user deletes an entry
+
+    _recordingPoints = 0;
+
+    // Loading and processing the existing records
+    for (var record in pointsBox.values) {
+      _recordingPoints += record.points;
+      _lastRecordingTime = DateTime.parse(record.recordingTime);
+      _lastRecordingType = record.recordingType;
+    }
+
+    notifyListeners();
+  }
+
 
   DateTime? _lastRecordingTime;
   String? _lastRecordingType;
@@ -11,7 +39,7 @@ class RecordedPointsProvider extends ChangeNotifier{
   int get recordingPoints => _recordingPoints;
 
   int get dedicationLevel {
-    if (_recordingPoints >= 500) {
+    if (_recordingPoints > 400) {
       return 5; // Expert
     } else if (_recordingPoints >= 300 && _recordingPoints < 400) {
       return 4; // Dedicated
@@ -23,23 +51,32 @@ class RecordedPointsProvider extends ChangeNotifier{
       return 0; // Beginner
     }
   }
-  void recordPoints(String recordingType){
-    DateTime currentTime = DateTime.now();
+
+  void recordPoints(String recordingType) async {
+    final DateTime currentTime = DateTime.now();
+    int earnedPoints = 0;
 
     if (_lastRecordingTime != null) {
-      int timeElapsed = currentTime.difference(_lastRecordingTime!).inSeconds;
-      //print(hoursElapsed);
-
-      int earnedPoints = (timeElapsed * 5).toInt();
-      //print(earnedPoints);
-
+      final int timeElapsed = currentTime.difference(_lastRecordingTime!).inSeconds;
+      earnedPoints = (timeElapsed * 5).toInt();
       _recordingPoints += earnedPoints;
-      print(_recordingPoints);
     }
-    // Updating the last recorded time
+
+    // Creating a new RecordedPoints object
+    final newRecord = RecordedPoints(
+      currentTime.toString(),
+      recordingType,
+      earnedPoints,
+      dedicationLevel,
+    );
+
+    // Saving the new record in the Hive box
+    await pointsBox.add(newRecord);
+
+    // Updating the provider's state
     _lastRecordingTime = currentTime;
     _lastRecordingType = recordingType;
-
     notifyListeners();
   }
+
 }

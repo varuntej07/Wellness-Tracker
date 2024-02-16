@@ -14,6 +14,7 @@ void main() async {
   Hive.registerAdapter(EmotionRecordAdapter());
   Hive.registerAdapter(DietRecordAdapter());
   Hive.registerAdapter(WorkoutRecordAdapter());
+  Hive.registerAdapter(RecordedPointsAdapter());
   runApp(
       ChangeNotifierProvider(
           create: (context) => RecordedPointsProvider(),
@@ -71,7 +72,7 @@ class _MyHomePage extends State<MyHomePage> {
                 child: Text('Error opening Hive box: ${snapshot.error}'))
             );
           }
-          // Future complete, return the main UI
+          // Future complete, returning the main UI
           return Scaffold(
             appBar: AppBar(
               //title: const Text("Wellness Tracker"),
