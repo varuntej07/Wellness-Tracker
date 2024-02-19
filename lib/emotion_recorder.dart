@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:homework1/points_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'Models/data_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EmotionRecorderWidget extends StatefulWidget {
   const EmotionRecorderWidget({super.key});
@@ -57,16 +59,16 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Emotion Recorder',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.emotionRecorder,
+                  style: const TextStyle(
                       fontSize: 25.0,
                       fontWeight: FontWeight.bold
                   ),
                 ),
-                const Text(
-                  'Yo, choose an emoji that suits your feeling rn',
-                  style: TextStyle(fontSize: 18.0),
+                Text(
+                  AppLocalizations.of(context)!.emotionText,
+                  style: const TextStyle(fontSize: 18.0),
                 ),
                 Wrap(
                   spacing: 8.0,
@@ -82,9 +84,9 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
                     ),
                   )).toList(),
                 ),
-                const Text(
-                  'Emotion Log:',
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context)!.emotionLog,
+                  style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
                 Expanded(
                   child: ListView.builder(
@@ -111,7 +113,7 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
     context.read<RecordedPointsProvider>().recordPoints('Diet Recorder');
     if (emotions.containsKey(choice)) {
       final selectedEmoji = emotions[choice]!;
-      final timestamp = DateTime.now().toString();
+      final timestamp = DateFormat('yy-MM-dd HH:mm:ss').format(DateTime.now());
       final EmotionRecord entry = EmotionRecord(timestamp, selectedEmoji);
 
       final key = await emojiBox.add(entry);

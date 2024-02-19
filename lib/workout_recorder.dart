@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:homework1/points_provider.dart';
 import 'package:provider/provider.dart';
-
 import 'Models/data_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WorkoutRecorderWidget extends StatefulWidget {
   const WorkoutRecorderWidget({Key? key}) : super(key: key);
@@ -58,9 +58,9 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text(
-              'Workout Recorder',
-              style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.workoutRecorder,
+              style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
             ),
             DropdownButton<String>(
               value: dropdownValue,
@@ -83,20 +83,20 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
             const SizedBox(height: 16.0),
             TextField(
               controller: quantityController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'How many times?',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.howMany,
               ),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () => recordWorkout(),
-              child: const Text('Submit'),
+              child: Text(AppLocalizations.of(context)!.submit),
             ),
             const SizedBox(height: 16.0),
-            const Text('Workout Log',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            Text(AppLocalizations.of(context)!.workoutLog,
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             Expanded(
               child: ListView.builder(

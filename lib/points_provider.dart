@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:homework1/Models/data_model.dart';
+import 'package:intl/intl.dart';
 
 
 class RecordedPointsProvider extends ChangeNotifier{
@@ -64,9 +65,11 @@ class RecordedPointsProvider extends ChangeNotifier{
       _recordingPoints += earnedPoints;
     }
 
-    // Creating a new RecordedPoints object
+    // Formatting the current time without milliseconds before storing it
+    final String formattedTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(currentTime);
+
     final newRecord = RecordedPoints(
-      currentTime.toString(),
+      formattedTime,
       recordingType,
       earnedPoints,
       dedicationLevel,
@@ -80,5 +83,6 @@ class RecordedPointsProvider extends ChangeNotifier{
     _lastRecordingType = recordingType;
     notifyListeners();
   }
+
 
 }
