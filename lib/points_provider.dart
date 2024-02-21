@@ -3,7 +3,6 @@ import 'package:hive/hive.dart';
 import 'package:homework1/Models/data_model.dart';
 import 'package:intl/intl.dart';
 
-
 class RecordedPointsProvider extends ChangeNotifier{
 
   late Box<RecordedPoints> pointsBox;

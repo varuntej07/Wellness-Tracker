@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:homework1/points_provider.dart';
+import 'package:homework1/ui_switch.dart';
 import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'Models/data_model.dart';
@@ -52,14 +53,19 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final uiStyle = Provider.of<UiSwitch>(context).widgetStyle;
+    if(uiStyle == WidgetStyle.cupertino){
+      //ToDo
+    }
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            AppLocalizations.of(context)!.dietRecorder,
-            style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
-          ),
+      body: Container(
+        padding: const EdgeInsets.symmetric(vertical: 30.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text( AppLocalizations.of(context)!.dietRecorder,
+              style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+            ),
           _buildInputSection(),
           const SizedBox(height: 16.0),
           ElevatedButton(
@@ -105,6 +111,7 @@ class _DietRecorderWidgetState extends State<DietRecorderWidget> {
           ),
         ],
       ),
+      )
     );
   }
 
@@ -154,7 +161,7 @@ Widget _buildInputSection() {
   }
 
   void recordDiet() async {
-    Provider.of<RecordedPointsProvider>(context, listen: false).recordPoints('Diet Record');
+    Provider.of<RecordedPointsProvider>(context, listen: false).recordPoints('Diet');
     String food = selectedFood ?? foodController.text;
     int? quantity = int.tryParse(quantityController.text);
     if (food.isNotEmpty && quantity != null) {

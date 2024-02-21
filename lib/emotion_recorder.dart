@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:homework1/points_provider.dart';
+import 'package:homework1/ui_switch.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'Models/data_model.dart';
@@ -53,21 +54,23 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final uiStyle = Provider.of<UiSwitch>(context).widgetStyle;
+    if(uiStyle == WidgetStyle.cupertino){
+      //ToDo
+    }
     return Scaffold(
         body: Container(
             padding: const EdgeInsets.all(10.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  AppLocalizations.of(context)!.emotionRecorder,
+                Text(AppLocalizations.of(context)!.emotionRecorder,
                   style: const TextStyle(
                       fontSize: 25.0,
                       fontWeight: FontWeight.bold
                   ),
                 ),
-                Text(
-                  AppLocalizations.of(context)!.emotionText,
+                Text(AppLocalizations.of(context)!.emotionText,
                   style: const TextStyle(fontSize: 18.0),
                 ),
                 Wrap(
@@ -110,7 +113,7 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
   }
 
   void recordEmotion(int choice) async {
-    context.read<RecordedPointsProvider>().recordPoints('Diet Recorder');
+    context.read<RecordedPointsProvider>().recordPoints('Emotion');
     if (emotions.containsKey(choice)) {
       final selectedEmoji = emotions[choice]!;
       final timestamp = DateFormat('yy-MM-dd HH:mm:ss').format(DateTime.now());
@@ -135,5 +138,3 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
     });
   }
 }
-
-

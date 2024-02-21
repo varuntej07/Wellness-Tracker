@@ -1,10 +1,11 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:homework1/points_provider.dart';
 import 'package:provider/provider.dart';
 import 'Models/data_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:homework1/ui_switch.dart';
 
 class WorkoutRecorderWidget extends StatefulWidget {
   const WorkoutRecorderWidget({Key? key}) : super(key: key);
@@ -14,13 +15,13 @@ class WorkoutRecorderWidget extends StatefulWidget {
 }
 
 class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
-  static const List<String> exercises = <String>[
-    'Running', 'Cycling', 'Weightlifting', 'Yoga', 'Swimming', 'Jumping Jacks', 'Boxing', 'Walking'
+  List<String> exercises = [
+    'Running', 'Walking', 'Swimming','Yoga','Gym','Tennis', 'Boxing', 'Jumping jacks'
   ];
 
   TextEditingController quantityController = TextEditingController();
   List<Map<String, dynamic>> loggedEntries = [];
-  String dropdownValue = exercises.first;
+  String? dropdownValue;
 
   late Box workoutBox;
 
@@ -50,11 +51,93 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
     }
   }
 
+  void _onPick(int index) {
+   // _onDropdownEntrySelected(exercises[index]);
+    setState(() {
+      dropdownValue = exercises[index];
+    });
+  }
+
+  _showPicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => Container(
+        height: 150,
+        color: Theme.of(context).cardColor,
+        child: CupertinoPicker(
+          itemExtent: 50,
+          onSelectedItemChanged: _onPick,
+          children: exercises.map((option) => Text(option)).toList(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final uiStyle = Provider.of<UiSwitch>(context).widgetStyle;
+    if(uiStyle == WidgetStyle.cupertino){
+      return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text(AppLocalizations.of(context)!.workoutRecorder,
+            style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+          ),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24.0),
+              CupertinoButton(
+                onPressed: () => _showPicker(context),
+                child: const Text('Choose a workout')
+              ),
+              const SizedBox(height: 16.0),
+              CupertinoTextFormFieldRow(
+                controller: quantityController,
+                keyboardType: TextInputType.number,
+                placeholder: AppLocalizations.of(context)!.howMany,
+              ),
+              const SizedBox(height: 16.0),
+              CupertinoButton.filled(
+                onPressed: () => recordWorkout(),
+                child: Text(AppLocalizations.of(context)!.submit),
+              ),
+              const SizedBox(height: 16.0),
+              Center(
+                child:Text(AppLocalizations.of(context)!.workoutLog,
+                style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                )
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: loggedEntries.length,
+                  itemBuilder: (context, index) {
+                    return CupertinoListTile(
+                      title: Text(loggedEntries[index]['exercise'] ?? '',
+                          style: const TextStyle(fontSize: 18.0)
+                      ),
+                      subtitle: Text('${loggedEntries[index]['quantity']} times',
+                          style: const TextStyle(fontSize: 18.0)
+                      ),
+                      trailing: IconButton(
+                          onPressed: () => deleteWorkout(index),
+                          icon: const Icon(Icons.delete)
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+        )
+      );
+    }
+
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 50.0),
+        padding: const EdgeInsets.symmetric(vertical: 30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -63,14 +146,16 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
               style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
             ),
             DropdownButton<String>(
-              value: dropdownValue,
+              value: dropdownValue ?? (exercises.isNotEmpty ? exercises.first : null),
               icon: const Icon(Icons.arrow_downward),
               elevation: 16,
               style: const TextStyle(color: Colors.deepPurple),
               onChanged: (value) {
-                setState(() {
-                  dropdownValue = value!;
-                });
+                if(value!= null) {
+                  setState(() {
+                    dropdownValue = value;
+                  });
+                }
               },
               items: exercises.map((exercise) {
                 return DropdownMenuItem<String>(
@@ -124,12 +209,12 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
   }
 
   void recordWorkout() async {
-    context.read<RecordedPointsProvider>().recordPoints('Workout Record');
+    context.read<RecordedPointsProvider>().recordPoints('Workout');
     final String quantityText = quantityController.text;
     final int? quantity = int.tryParse(quantityText);
-    if (dropdownValue.isNotEmpty && quantity != null) {
+    if (dropdownValue!.isNotEmpty && quantity != null) {
       final String timestamp = DateTime.now().toString();
-      final WorkoutRecord entry = WorkoutRecord(dropdownValue, quantity);
+      final WorkoutRecord entry = WorkoutRecord(dropdownValue!, quantity);
 
       final key = await workoutBox.add(entry);
 
@@ -141,7 +226,6 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
       quantityController.clear();
     }
   }
-
 
   void deleteWorkout(int index) async {
     final entry = loggedEntries[index];
