@@ -1,0 +1,34 @@
+{
+ "helloWorld" : "Hello World",
+ "@helloWorld": {
+    "description": "starting greet!"
+    },
+ "lastRecordedAt": "Last Recorded at",
+  "lastRecorded": "Last Recorded",
+  "points": "Points",
+  "dedicationLevel": "Dedication Level",
+  "emotions": "Emotions",
+  "emotionRecorder": "Emotion Recorder",
+  "emotionLog": "Emotion Log",
+  "emotionText": "Yo, Choose an emoji that suits your feeling rn",
+
+  "diet": "Diet",
+  "dietRecorder": "Diet Recorder",
+ "whatFood": "What did you eat?",
+ "howMuch": "How much did you eat?",
+  "submit": "submit",
+  "dietLog": "Diet Log",
+
+  "workout": "Workout",
+  "workoutRecorder": "Workout Recorder",
+ "howMany": "How many times?",
+  "workoutLog": "Workout Log",
+  "running": "Running",
+  "cycling": "Cycling",
+  "weightLifting": "Weight Lifting",
+  "swimming": "Swimming",
+  "yoga": "Yoga",
+  "boxing": "Boxing",
+  "walking": "Walking",
+  "jumpingJacks": "Jumping Jacks"
+}
