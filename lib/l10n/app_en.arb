@@ -12,23 +12,31 @@
   "emotionLog": "Emotion Log",
   "emotionText": "Yo, Choose an emoji that suits your feeling rn",
 
+ "selectFood": "Select Food",
+ "chooseLanguage": "Choose a Language",
   "diet": "Diet",
   "dietRecorder": "Diet Recorder",
  "whatFood": "What did you eat?",
  "howMuch": "How much did you eat?",
   "submit": "submit",
   "dietLog": "Diet Log",
+ "edit": "Edit",
+"cancel": "Cancel",
+ "update": "Update",
+"item": "Item",
+ "quantity": "Quantity",
 
   "workout": "Workout",
+ "choose": "Choose a workout",
   "workoutRecorder": "Workout Recorder",
  "howMany": "How many times?",
   "workoutLog": "Workout Log",
   "running": "Running",
   "cycling": "Cycling",
-  "weightLifting": "Weight Lifting",
+  "tennis": "Tennis",
   "swimming": "Swimming",
   "yoga": "Yoga",
   "boxing": "Boxing",
   "walking": "Walking",
-  "jumpingJacks": "Jumping Jacks"
+  "gym": "Gym"
 }

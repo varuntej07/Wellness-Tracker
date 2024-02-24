@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:homework1/recordedInfo.dart';
@@ -45,7 +46,76 @@ class _MyHomePage extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final uiStyle = Provider.of<UiSwitch>(context).widgetStyle;
+    if(uiStyle == WidgetStyle.cupertino){
+      return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        //backgroundColor: CupertinoColors.systemPurple,
+        leading: const RecordedInfoWidget(),
+        trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CupertinoButton(
+                onPressed: showLanguageSelection,
+              child: const Icon(CupertinoIcons.globe, color: CupertinoColors.black),
+            ),
+              CupertinoSwitch(
+                value: isToggled,
+                activeColor: CupertinoColors.activeGreen,
+                onChanged: (value) {
+                  setState(() {
+                    isToggled = value;
+                    Provider.of<UiSwitch>(context, listen: false).toggleWidgetStyle();
+                  });
+                },
+              ),
+            ]
+        ),
+      ),
+        child: SafeArea(
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [CupertinoColors.systemPurple, CupertinoColors.systemIndigo],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight
+              ),
+            ),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: IndexedStack(
+                index: selectedIndex,
+                children: _widgets,
+              ),
+            ),
+            CupertinoTabBar(
+              backgroundColor: CupertinoColors.systemGrey,
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: const Icon(CupertinoIcons.smiley),
+                  label: AppLocalizations.of(context)!.emotions
+                ),
+                 BottomNavigationBarItem(
+                  icon: const Icon(CupertinoIcons.bell),
+                  label: AppLocalizations.of(context)!.diet
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(CupertinoIcons.bolt),
+                  label: AppLocalizations.of(context)!.workout
+                ),
+              ],
+              currentIndex: selectedIndex,
+              onTap: _onTap,
+            ),
+          ],
+        ),
+    ),
+        )
+      );
+    }
+    else {
+      return Scaffold(
       appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.purpleAccent[250],
@@ -71,7 +141,7 @@ class _MyHomePage extends State<MyHomePage> {
                   child: DropdownButton<Language>(
                     icon: const Icon(Icons.language, color: Colors.black, size: 32),
                     onChanged: (Language ? language){
-                      MyApp.setLocale(context, Locale(language!.langCode,''));
+                      MyApp.of(context)?.setLocale(Locale(language!.langCode, ''));
                     },
                     items: Language.languagesList().map<DropdownMenuItem<Language>>((language) {
                       return DropdownMenuItem<Language>(
@@ -120,6 +190,27 @@ class _MyHomePage extends State<MyHomePage> {
         currentIndex: selectedIndex,
         onTap: _onTap,
       ),
+    );
+    }
+  }
+
+  void showLanguageSelection() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoActionSheet(
+          title: Text(AppLocalizations.of(context)!.chooseLanguage),
+          actions: Language.languagesList().map((language) {
+            return CupertinoActionSheetAction(
+              child: Text(language.name),
+              onPressed: (){
+                myAppKey.currentState?.setLocale(Locale(language.langCode, ''));
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

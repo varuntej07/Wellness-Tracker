@@ -10,11 +10,9 @@ class UiSwitch with ChangeNotifier{
 
   UiSwitch(this.widgetStyle);
 
- // WidgetStyle get widgetStyle => widgetStyle;
-
   void toggleWidgetStyle() {
     widgetStyle = widgetStyle == WidgetStyle.material ? WidgetStyle.cupertino : WidgetStyle.material;
-    print("switch test");
+    //print("switch test");
     notifyListeners();
   }
 }

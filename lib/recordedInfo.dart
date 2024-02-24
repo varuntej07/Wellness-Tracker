@@ -14,8 +14,8 @@ class RecordedInfoWidget extends StatelessWidget {
 
     return Consumer<RecordedPointsProvider>(
       builder: (context, recordingProvider, child) {
-        return Container(
-            //color: Colors.purple[200],
+        return SingleChildScrollView(
+            child: Container(
             padding: const EdgeInsets.symmetric(vertical: 3.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -57,6 +57,7 @@ class RecordedInfoWidget extends StatelessWidget {
                   ],
                 ),
               ],
+            )
             )
         );
       },

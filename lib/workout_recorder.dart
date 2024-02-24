@@ -1,23 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:homework1/points_provider.dart';
 import 'package:provider/provider.dart';
 import 'Models/data_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:homework1/ui_switch.dart';
+import 'package:homework1/points_provider.dart';
 
 class WorkoutRecorderWidget extends StatefulWidget {
   const WorkoutRecorderWidget({Key? key}) : super(key: key);
 
   @override
-  State<WorkoutRecorderWidget> createState() => _WorkoutRecorderWidgetState();
+  createState() => _WorkoutRecorderWidgetState();
 }
 
 class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
-  List<String> exercises = [
-    'Running', 'Walking', 'Swimming','Yoga','Gym','Tennis', 'Boxing', 'Jumping jacks'
-  ];
+  late List<String> exercises;
 
   TextEditingController quantityController = TextEditingController();
   List<Map<String, dynamic>> loggedEntries = [];
@@ -33,26 +31,134 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
 
   Future<void> _openBox() async {
     workoutBox = await Hive.openBox('workoutBox');
+    loadEntries();
+  }
+
+  void loadEntries() {
     final List<Map<String, dynamic>> loadedEntries = [];
     workoutBox.toMap().forEach((key, record) {
       if (record is WorkoutRecord) {
         loadedEntries.add({
-          'key': key, // Storing the Hive-generated key for later reference
+          'key': key,
           'exercise': record.workout,
           'quantity': record.count.toString(),
-          //'datetime': DateTime.now().toString(),
         });
       }
     });
-    if(mounted) {
-      setState(() {
+
+    setState(() {
       loggedEntries = loadedEntries;
     });
-    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    exercises = [
+      AppLocalizations.of(context)!.running,
+      AppLocalizations.of(context)!.walking,
+      AppLocalizations.of(context)!.gym,
+      AppLocalizations.of(context)!.yoga,
+      AppLocalizations.of(context)!.swimming,
+      AppLocalizations.of(context)!.boxing,
+      AppLocalizations.of(context)!.tennis,
+      AppLocalizations.of(context)!.cycling
+    ];
+    final uiStyle = Provider.of<UiSwitch>(context).widgetStyle;
+    return uiStyle == WidgetStyle.cupertino ? buildCupertinoUI() : buildMaterialUI();
+  }
+
+  Widget buildCupertinoUI() {
+    return CupertinoPageScaffold(
+      child: SafeArea(child: buildBody(isCupertino: true)),
+    );
+  }
+
+  Widget buildMaterialUI() {
+    return Scaffold(
+      body: buildBody(isCupertino: false),
+    );
+  }
+
+  Widget buildBody({required bool isCupertino}) {
+    return Scaffold(
+        body: Container(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize : MainAxisSize.max,
+        children: [
+          Text(AppLocalizations.of(context)!.workoutRecorder,
+            style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+          ),
+          isCupertino ? CupertinoButton(
+            onPressed: () => _showPicker(context),
+            child: Text(AppLocalizations.of(context)!.choose))
+              :
+          DropdownButton<String>(
+            value: dropdownValue,
+            icon: const Icon(Icons.arrow_drop_down),
+            onChanged: (String? newValue) {
+              setState(() {
+                dropdownValue = newValue;
+              });
+            },
+            items: exercises.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 16.0),
+          isCupertino ? CupertinoTextFormFieldRow(
+            controller: quantityController,
+            keyboardType: TextInputType.number,
+            placeholder: AppLocalizations.of(context)!.howMany)
+              :
+          TextField(
+            controller: quantityController,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.howMany,
+              border: isCupertino ? null : const OutlineInputBorder()),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 16.0),
+
+          isCupertino ? CupertinoButton.filled(
+            onPressed: recordWorkout,
+            child: Text(AppLocalizations.of(context)!.submit))
+              :
+          ElevatedButton(
+            onPressed: recordWorkout,
+            child: Text(AppLocalizations.of(context)!.submit)),
+
+          Expanded(child: buildLoggedEntriesList()),
+        ],
+      ),
+        )
+    );
+  }
+
+  Widget buildLoggedEntriesList() {
+    return Card(
+        child: ListView.builder(
+          itemCount: loggedEntries.length,
+          itemBuilder: (context, index) {
+            final entry = loggedEntries[index];
+            return ListTile(
+              title: Text(entry['exercise'] ?? ''),
+              subtitle: Text('${entry['quantity']} times'),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () => deleteWorkout(index),
+              ),
+            );
+          },
+        )
+    );
   }
 
   void _onPick(int index) {
-   // _onDropdownEntrySelected(exercises[index]);
     setState(() {
       dropdownValue = exercises[index];
     });
@@ -62,147 +168,12 @@ class _WorkoutRecorderWidgetState extends State<WorkoutRecorderWidget> {
     showCupertinoModalPopup(
       context: context,
       builder: (context) => Container(
-        height: 150,
+        height: 180,
         color: Theme.of(context).cardColor,
         child: CupertinoPicker(
-          itemExtent: 50,
+          itemExtent: 60,
           onSelectedItemChanged: _onPick,
           children: exercises.map((option) => Text(option)).toList(),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final uiStyle = Provider.of<UiSwitch>(context).widgetStyle;
-    if(uiStyle == WidgetStyle.cupertino){
-      return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text(AppLocalizations.of(context)!.workoutRecorder,
-            style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
-          ),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24.0),
-              CupertinoButton(
-                onPressed: () => _showPicker(context),
-                child: const Text('Choose a workout')
-              ),
-              const SizedBox(height: 16.0),
-              CupertinoTextFormFieldRow(
-                controller: quantityController,
-                keyboardType: TextInputType.number,
-                placeholder: AppLocalizations.of(context)!.howMany,
-              ),
-              const SizedBox(height: 16.0),
-              CupertinoButton.filled(
-                onPressed: () => recordWorkout(),
-                child: Text(AppLocalizations.of(context)!.submit),
-              ),
-              const SizedBox(height: 16.0),
-              Center(
-                child:Text(AppLocalizations.of(context)!.workoutLog,
-                style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                )
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: loggedEntries.length,
-                  itemBuilder: (context, index) {
-                    return CupertinoListTile(
-                      title: Text(loggedEntries[index]['exercise'] ?? '',
-                          style: const TextStyle(fontSize: 18.0)
-                      ),
-                      subtitle: Text('${loggedEntries[index]['quantity']} times',
-                          style: const TextStyle(fontSize: 18.0)
-                      ),
-                      trailing: IconButton(
-                          onPressed: () => deleteWorkout(index),
-                          icon: const Icon(Icons.delete)
-                      ),
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
-        )
-      );
-    }
-
-    return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 30.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context)!.workoutRecorder,
-              style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
-            ),
-            DropdownButton<String>(
-              value: dropdownValue ?? (exercises.isNotEmpty ? exercises.first : null),
-              icon: const Icon(Icons.arrow_downward),
-              elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
-              onChanged: (value) {
-                if(value!= null) {
-                  setState(() {
-                    dropdownValue = value;
-                  });
-                }
-              },
-              items: exercises.map((exercise) {
-                return DropdownMenuItem<String>(
-                  key: Key(exercise),
-                  value: exercise,
-                  child: Text(exercise),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: quantityController,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.howMany,
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () => recordWorkout(),
-              child: Text(AppLocalizations.of(context)!.submit),
-            ),
-            const SizedBox(height: 16.0),
-            Text(AppLocalizations.of(context)!.workoutLog,
-              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: loggedEntries.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(loggedEntries[index]['exercise'] ?? '',
-                        style: const TextStyle(fontSize: 18.0)
-                    ),
-                    subtitle: Text('${loggedEntries[index]['quantity']} times',
-                        style: const TextStyle(fontSize: 18.0)
-                    ),
-                    trailing: IconButton(
-                      onPressed: () => deleteWorkout(index),
-                      icon: const Icon(Icons.delete)
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
         ),
       ),
     );

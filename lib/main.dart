@@ -7,6 +7,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'home_page.dart';
 import 'ui_switch.dart';
 
+final GlobalKey<_MyAppState> myAppKey = GlobalKey<_MyAppState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -14,25 +16,25 @@ void main() async {
   Hive.registerAdapter(DietRecordAdapter());
   Hive.registerAdapter(WorkoutRecordAdapter());
   Hive.registerAdapter(RecordedPointsAdapter());
-  runApp(MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => RecordedPointsProvider()),
-        ChangeNotifierProvider(create: (_) => UiSwitch(WidgetStyle.material)),
-      ],
-      child: const MyApp()
-  )
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (context) => RecordedPointsProvider()),
+            ChangeNotifierProvider(create: (_) => UiSwitch(WidgetStyle.material))
+          ],
+          child: MyApp(key: myAppKey)
+      )
   );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
 
-  static void setLocale(BuildContext context, Locale newLocale){
-    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
-    state?.setLocale(newLocale);
+  static _MyAppState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_MyAppState>();
   }
 }
 

@@ -25,10 +25,8 @@ class RecordedPointsProvider extends ChangeNotifier{
       _lastRecordingTime = DateTime.parse(record.recordingTime);
       _lastRecordingType = record.recordingType;
     }
-
     notifyListeners();
   }
-
 
   DateTime? _lastRecordingTime;
   String? _lastRecordingType;
@@ -82,6 +80,4 @@ class RecordedPointsProvider extends ChangeNotifier{
     _lastRecordingType = recordingType;
     notifyListeners();
   }
-
-
 }
