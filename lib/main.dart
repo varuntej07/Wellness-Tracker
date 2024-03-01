@@ -33,7 +33,7 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 
-  static _MyAppState? of(BuildContext context) {
+  static of(BuildContext context) {
     return context.findAncestorStateOfType<_MyAppState>();
   }
 }
