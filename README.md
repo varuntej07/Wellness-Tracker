@@ -1,6 +1,3 @@
-# homework1
-
-Homework1 - UI with Mock Data
 
 ## Getting Started
 
@@ -14,3 +11,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+add 'flutter gen-l10n' for localizations
+should run this for cloud access => 'flutterfire configure --project=my-wellness-tracker-349db' 

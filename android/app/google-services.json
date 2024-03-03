@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "647311716425",
+    "project_id": "my-wellness-tracker-349db",
+    "storage_bucket": "my-wellness-tracker-349db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647311716425:android:3b6ffdf758de9fd5504f98",
+        "android_client_info": {
+          "package_name": "cs.seattleu.homework1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvrP5_wgKuLHkb-wcVxnD4hzsLJXmCeSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

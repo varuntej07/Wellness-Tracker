@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:homework1/points_provider.dart';
-import 'package:homework1/ui_switch.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'Models/data_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../Models/data_model.dart';
+import '../Models/ui_switch.dart';
 
 class EmotionRecorderWidget extends StatefulWidget {
   const EmotionRecorderWidget({super.key});
@@ -56,65 +57,14 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
   Widget build(BuildContext context) {
     final uiStyle = Provider.of<UiSwitch>(context).widgetStyle;
     if(uiStyle == WidgetStyle.cupertino){
-      return CupertinoPageScaffold(
-        child: Container(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(AppLocalizations.of(context)!.emotionRecorder,
-                  style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
-              ),
-              Text(AppLocalizations.of(context)!.emotionText,
-                style: const TextStyle(fontSize: 18.0),
-              ),
-              Wrap(
-                spacing: 8.0,
-                runSpacing: 5.0,
-                children: emotions.entries.map((entry) => Material(
-                  child: CupertinoButton(key: Key('emoji_${entry.key}'),
-                      onPressed: () => recordEmotion(entry.key),
-                      child: Text(entry.value,
-                        style: const TextStyle(fontSize: 22.0)
-                      )
-                  ),
-                )).toList(),
-              ),
-              const SizedBox(height: 24.0),
-              Text(
-                AppLocalizations.of(context)!.emotionLog,
-                style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 18.0),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: loggedEntries.length,
-                  itemBuilder: (context, index) {
-                    return CupertinoListTile(
-                      title: Text(loggedEntries[index]['emoji']),
-                      subtitle: Text(loggedEntries[index]['datetime']),
-                      trailing: CupertinoButton(
-                        onPressed: () => deleteEmoji(index),
-                        child: const Icon(CupertinoIcons.delete_solid),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        )
-      );
-    }
-    else {
       return Scaffold(
-        body: Container(
-            padding: const EdgeInsets.all(14.0),
+          body: Container(
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(AppLocalizations.of(context)!.emotionRecorder,
-                  style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
+                    style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
                 ),
                 Text(AppLocalizations.of(context)!.emotionText,
                   style: const TextStyle(fontSize: 18.0),
@@ -123,12 +73,10 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
                   spacing: 8.0,
                   runSpacing: 5.0,
                   children: emotions.entries.map((entry) => Material(
-                    child: ElevatedButton(
-                        key: Key('emoji_${entry.key}'),
+                    child: CupertinoButton(key: Key('emoji_${entry.key}'),
                         onPressed: () => recordEmotion(entry.key),
-                        child: Text(
-                          entry.value,
-                          style: const TextStyle(fontSize: 20.0),
+                        child: Text(entry.value,
+                            style: const TextStyle(fontSize: 22.0)
                         )
                     ),
                   )).toList(),
@@ -138,26 +86,79 @@ class _EmotionRecorderWidgetState extends State<EmotionRecorderWidget> {
                   AppLocalizations.of(context)!.emotionLog,
                   style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 18.0),
                 Expanded(
-                  child: Card(
-                    child: ListView.builder(
+                  child: ListView.builder(
                     itemCount: loggedEntries.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
+                      return CupertinoListTile(
                         title: Text(loggedEntries[index]['emoji']),
                         subtitle: Text(loggedEntries[index]['datetime']),
-                        trailing: IconButton(
+                        trailing: CupertinoButton(
                           onPressed: () => deleteEmoji(index),
-                          icon: const Icon(Icons.delete),
+                          child: const Icon(CupertinoIcons.delete_solid),
                         ),
                       );
                     },
                   ),
                 ),
-                )
               ],
-            )
-        )
+            ),
+          )
+      );
+    }
+    else {
+      return Scaffold(
+          body: Container(
+              padding: const EdgeInsets.all(14.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(AppLocalizations.of(context)!.emotionRecorder,
+                      style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
+                  ),
+                  Text(AppLocalizations.of(context)!.emotionText,
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 5.0,
+                    children: emotions.entries.map((entry) => Material(
+                      child: ElevatedButton(
+                          key: Key('emoji_${entry.key}'),
+                          onPressed: () => recordEmotion(entry.key),
+                          child: Text(
+                            entry.value,
+                            style: const TextStyle(fontSize: 20.0),
+                          )
+                      ),
+                    )).toList(),
+                  ),
+                  const SizedBox(height: 24.0),
+                  Text(
+                    AppLocalizations.of(context)!.emotionLog,
+                    style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: Card(
+                      child: ListView.builder(
+                        itemCount: loggedEntries.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(loggedEntries[index]['emoji']),
+                            subtitle: Text(loggedEntries[index]['datetime']),
+                            trailing: IconButton(
+                              onPressed: () => deleteEmoji(index),
+                              icon: const Icon(Icons.delete),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              )
+          )
       );
     }
   }

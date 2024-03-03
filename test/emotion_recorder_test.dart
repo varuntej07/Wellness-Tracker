@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:homework1/emotion_recorder.dart';
+import 'package:homework1/screens/emotion_recorder.dart';
 import 'package:homework1/points_provider.dart';
 import 'package:provider/provider.dart';
 

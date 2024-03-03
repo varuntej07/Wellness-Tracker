@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:homework1/workout_recorder.dart';
+import 'package:homework1/screens/workout_recorder.dart';
 import 'package:provider/provider.dart';
 import 'package:homework1/points_provider.dart';
 
